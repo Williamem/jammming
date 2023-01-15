@@ -5,15 +5,21 @@ import './Track.css';
     let isRemoval;
 
 export class Track extends React.Component {
-
-
+    constructor(props) {
+        super(props);
+        this.addTrack = this.addTrack.bind(this);
+    }
 
     renderAction() {
         if (isRemoval) {
             return <button className="Track-action">-</button>;
         } else {
-            return <button className="Track-action">+</button>;
+            return <button onClick={this.addTrack} className="Track-action">+</button>;
         }
+    }
+
+    addTrack() {
+        this.props.onAdd(this.props.track);
     }
 
     render() {

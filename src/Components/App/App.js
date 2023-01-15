@@ -9,6 +9,7 @@ import {Playlist} from '../Playlist/Playlist';
 export class App extends React.Component {
     constructor(props) {
         super(props);
+        this.addTrack = this.addTrack.bind(this);
 
         this.state = {
             searchResults: [
@@ -23,7 +24,6 @@ export class App extends React.Component {
                 {name: 'name6', artist: 'artist6', album: 'album6', id: 6},
             ],
         }
-        this.addTrack = this.addTrack.bind(this);
     }
 
     addTrack(track) {
