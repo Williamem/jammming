@@ -23,6 +23,7 @@ export class App extends React.Component {
                 {name: 'name6', artist: 'artist6', album: 'album6', id: 6},
             ],
         }
+        this.addTrack = this.addTrack.bind(this);
     }
 
     addTrack(track) {
