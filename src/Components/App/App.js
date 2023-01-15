@@ -24,6 +24,17 @@ export class App extends React.Component {
             ],
         }
     }
+
+    addTrack(track) {
+        const tracks = this.state.playlistTracks;
+        if (tracks.find(savedTrack => savedTrack.id === track.id)) {
+            return;
+        } else {
+            tracks.push(track);
+        }
+        this.setState({playlistTracks: tracks})
+    }
+
     render() {
         return (
             <div>
