@@ -90,7 +90,7 @@ export const Spotify = {
             const response = await fetch(baseUrl + createPlaylistEndpoint, {
                 headers: headers,
                 method: 'POST',
-                body: {name: playlistName}
+                body: JSON.stringify({name: playlistName})
             });
             if (response.ok) {
                 const jsonResponse = await response.json();
