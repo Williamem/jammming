@@ -18,7 +18,7 @@ export class App extends React.Component {
 
         this.state = {
             searchResults: [],
-            playlistName: 'Playlist 1',
+            playlistName: 'New Playlist',
             playlistTracks: [
 /*                 {name: 'name4', artist: 'artist4', album: 'album4', id: 4},
                 {name: 'name5', artist: 'artist5', album: 'album5', id: 5},
