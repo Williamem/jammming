@@ -101,7 +101,7 @@ export const Spotify = {
                     /* const response = */ await fetch(baseUrl + addTracksEndpoint, {
                         headers: headers,
                         method: 'POST',
-                        body: {uris: JSON.stringify(URIs)}
+                        body: JSON.stringify({uris: URIs})
                     });
                 } catch (error) {
                     console.log(error)
