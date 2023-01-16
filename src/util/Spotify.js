@@ -3,6 +3,7 @@ import {clientId} from './apiKey'
 
 let accessToken;
 const redirectUri = 'http://localhost:3000/';
+const baseUrl = 'https://api.spotify.com/v1'
 
 export const Spotify = {
     getAccessToken() {
@@ -18,28 +19,27 @@ export const Spotify = {
 
             window.setTimeout(() => accessToken = '', expiresIn * 1000);
             window.history.pushState('Access Token', null, '/');
-            //part of the borrowed code, put back in neccesary
-            //return accessToken;
-        }
+            return accessToken;
+        };
 
         if (!tokenMatch || !expiresMatch) {
             window.location.href =`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
-        }
+        };
         //should this be here?
         return;
     },
 
     async search(term) {
-        const accessToken = Spotify.getAccessToken;
-        const endpoint = `https://api.spotify.com/v1/search?type=track&q=${term}`
-        //below mig be one too few objects???
-        const headers = {headers: {Authorization: `Bearer ${accessToken}`}};
+        const accessToken = Spotify.getAccessToken();
+        const endpoint = `/search?type=track&q=${term}`;
+        const headers = {Authorization: `Bearer ${accessToken}`};
 
         try {
-            const response = await fetch(endpoint, headers);
+            const response = await fetch(baseUrl + endpoint, {headers: headers});
             if (response.ok) {
                 const jsonResponse = await response.json();
-                jsonResponse.map(track => {
+                if(!jsonResponse.tracks) return [];
+                return jsonResponse.tracks.items.map(track => {
                     return {
                         id: track.id,
                         name: track.name,
@@ -49,8 +49,26 @@ export const Spotify = {
                     }
                 })
             }
-        } catch(error) {
-            console.log(error);
+        } catch(err) {
+            console.log(err);
+        }
+    },
+
+    async savePlaylist(playlistName, URIs) {
+        if (!playlistName || !URIs) return;
+        const accessToken = Spotify.getAccessToken();
+        const headers = {Authorization: `Bearer ${accessToken}`};
+        const endpoint = '/me';
+        let userID;
+
+        try {
+            const response = await fetch(baseUrl + endpoint, {hearders: headers});
+            if (response.ok) {
+                const jsonResponse = response.json();
+                userID = jsonResponse.id;
+            }
+        } catch(err) {
+            console.log(err);
         }
     },
 }

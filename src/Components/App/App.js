@@ -17,11 +17,7 @@ export class App extends React.Component {
         this.search = this.search.bind(this);
 
         this.state = {
-            searchResults: [
-                {name: 'name1', artist: 'artist1', album: 'album1', id: 1},
-                {name: 'name2', artist: 'artist2', album: 'album2', id: 2},
-                {name: 'name3', artist: 'artist3', album: 'album3', id: 3},
-            ],
+            searchResults: [],
             playlistName: 'Playlist 1',
             playlistTracks: [
                 {name: 'name4', artist: 'artist4', album: 'album4', id: 4},
@@ -54,8 +50,13 @@ export class App extends React.Component {
         return this.state.playlistTracks.map(track => track.uri);
     }
 
-    search(term) {
-        this.setState({searchResults: Spotify.search(term)});
+    async search(term) {
+        const searchResults = await Spotify.search(term);
+        try {
+            this.setState({searchResults: searchResults})
+        } catch(error) {
+            console.log(error);
+        }
     }
 
     render() {
