@@ -2,6 +2,8 @@
 import {clientId} from './apiKey'
 
 let accessToken;
+let userID;
+
 const redirectUri = 'http://localhost:3000/';
 const baseUrl = 'https://api.spotify.com/v1'
 
@@ -49,26 +51,106 @@ export const Spotify = {
                     }
                 })
             }
-        } catch(err) {
-            console.log(err);
+        } catch(error) {
+            console.log(error);
+        }
+    },
+
+    async getUserID() {
+        if (userID) return userID;
+
+        const accessToken = this.getAccessToken();
+        const userEndpoint = '/me';
+        const headers = {Authorization: `Bearer ${accessToken}`};
+
+        try {
+            const response = await fetch(baseUrl + userEndpoint, {headers: headers});
+            if (response.ok) {
+                const jsonResponse = await response.json();
+                userID = jsonResponse.id;
+                return userID;
+            }
+        } catch(error) {
+            console.log(error)
         }
     },
 
     async savePlaylist(playlistName, URIs) {
-        if (!playlistName || !URIs) return;
+        if (!playlistName || !URIs.length) {
+            return;
+        }
+        
+        const userID = await Spotify.getUserID();
         const accessToken = Spotify.getAccessToken();
         const headers = {Authorization: `Bearer ${accessToken}`};
-        const endpoint = '/me';
+        const createPlaylistEndpoint = `/users/${userID}/playlists`;
+        let addTracksEndpoint;
+
+        try {
+            const response = await fetch(baseUrl + createPlaylistEndpoint, {
+                headers: headers,
+                method: 'POST',
+                body: {name: playlistName}
+            });
+            if (response.ok) {
+                const jsonResponse = await response.json();
+                const playlistID = jsonResponse.id;
+                addTracksEndpoint = `/users/${userID}/playlists/${playlistID}/tracks`;
+
+                try {
+                    /* const response = */ await fetch(baseUrl + addTracksEndpoint, {
+                        headers: headers,
+                        method: 'POST',
+                        body: {uris: JSON.stringify(URIs)}
+                    });
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    },
+}
+
+
+/*         if (!playlistName || !URIs) return;
+        const accessToken = Spotify.getAccessToken();
+        const headers = {Authorization: `Bearer ${accessToken}`};
+        const userEndpoint = '/me';
         let userID;
 
         try {
-            const response = await fetch(baseUrl + endpoint, {hearders: headers});
+            const response = await fetch(baseUrl + userEndpoint, {headers: headers});
             if (response.ok) {
                 const jsonResponse = response.json();
                 userID = jsonResponse.id;
             }
-        } catch(err) {
-            console.log(err);
-        }
-    },
-}
+                try {
+                    const createPlaylistEndpoint = `/users/${userID}/playlists`;
+                    const response = await fetch(baseUrl + createPlaylistEndpoint, {
+                        headers: headers,
+                        method: 'POST',
+                        body: JSON.stringify({name: playlistName})
+                    });
+                    if (response.ok) {
+                        const playlistID = await response.json().id;
+
+                        try {
+                        const addTracksEndpoint = `/playlists/${playlistID}/tracks`;
+                        const response = fetch(baseUrl + addTracksEndpoint, {
+                            headers: headers,
+                            method: 'POST',
+                            body: JSON.stringify({uris: URIs})
+                        });
+                        //const playlistID = (await response).json();
+                    } catch(err) {
+                        console.log(err)
+                    }
+                }
+            } catch(err) {
+                console.log(err)
+            }
+    } catch(err) {
+        console.log(err);
+    } */
